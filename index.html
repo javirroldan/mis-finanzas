@@ -289,6 +289,32 @@
   .historial-item .hi-monto { font-family: 'DM Mono', monospace; color: var(--success); font-weight: 700; }
   .empty { color: var(--muted); font-size: 0.8rem; text-align: center; padding: 20px; font-family: 'DM Mono', monospace; }
 
+
+  /* BACKUP */
+  .backup-section { padding: 24px 24px 0; }
+  .backup-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    transition: background .3s, border-color .3s;
+  }
+  .backup-box .title { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; font-weight: 700; }
+  .backup-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-backup {
+    flex: 1; min-width: 130px;
+    padding: 10px 16px; border-radius: 8px;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
+    cursor: pointer; transition: all .2s; border: none;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-backup.export { background: #1e3a5f; color: #60a5fa; border: 1px solid #3b82f6; }
+  .btn-backup.export:hover { background: #3b82f6; color: #fff; }
+  .btn-backup.import { background: transparent; color: var(--success); border: 1px solid var(--success); }
+  .btn-backup.import:hover { background: var(--success); color: #fff; }
+  .btn-backup.danger-clear { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+  .btn-backup.danger-clear:hover { background: var(--danger); color: #fff; }
+  body.light .btn-backup.export { background: #dbeafe; color: #2563eb; }
   /* RESPONSIVE */
   @media(max-width: 520px) {
     .resumen { grid-template-columns: 1fr 1fr; }
@@ -367,6 +393,19 @@
 <div class="historial-section">
   <div class="section-title">✅ Historial de pagos</div>
   <div class="historial-box" id="historial-lista"></div>
+</div>
+
+
+<div class="backup-section">
+  <div class="backup-box">
+    <div class="title">💾 Backup de datos</div>
+    <div class="backup-row">
+      <button class="btn-backup export" onclick="exportarDatos()">⬇️ Exportar backup</button>
+      <button class="btn-backup import" onclick="document.getElementById('import-file').click()">⬆️ Importar backup</button>
+      <button class="btn-backup danger-clear" onclick="borrarTodo()">🗑 Borrar todo</button>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importarDatos(event)">
+  </div>
 </div>
 
 <script>
@@ -625,6 +664,49 @@ function toggleTema() {
     document.getElementById('theme-toggle').textContent = '🌙';
   }
 })();
+
+// ───── Backup ─────
+function exportarDatos() {
+  const data = cargarDatos();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const fecha = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = 'finanzas-backup-' + fecha + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarDatos(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (typeof data !== 'object') throw new Error();
+      if (!confirm('Esto va a reemplazar todos tus datos actuales. ¿Confirmás?')) return;
+      localStorage.setItem('finanzas_v2', JSON.stringify(data));
+      render();
+      alert('✅ Datos importados correctamente');
+    } catch {
+      alert('❌ El archivo no es válido. Asegurate de usar un backup generado por esta app.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function borrarTodo() {
+  if (!confirm('⚠️ Esto borra TODOS tus datos de todos los meses. ¿Estás seguro?')) return;
+  if (!confirm('¿Seguro seguro? No hay vuelta atrás.')) return;
+  localStorage.removeItem('finanzas_v2');
+  render();
+  alert('Datos borrados.');
+}
+
 // ── Registro PWA Service Worker ──
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
