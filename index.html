@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis Finanzas</title>
+<meta name="description" content="Control de cuentas y gastos mensuales">
+<meta name="theme-color" content="#0e0f14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mis Finanzas">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── MODO OSCURO (default) ── */
+  :root {
+    --bg: #0e0f14;
+    --surface: #161720;
+    --surface2: #1e2030;
+    --border: #2a2d40;
+    --blue: #3b82f6;
+    --blue-hover: #60a5fa;
+    --blue-dim: #1e3a5f;
+    --accent: #f0c040;
+    --danger: #f56565;
+    --success: #4ade80;
+    --text: #e8eaf0;
+    --muted: #7a7e9a;
+    --paid: #1a2e1a;
+    --paid-border: #4ade80;
+    --logo-bg: #3b82f6;
+    --logo-color: #fff;
+  }
+  /* ── MODO CLARO ── */
+  body.light {
+    --bg: #f0f4fa;
+    --surface: #ffffff;
+    --surface2: #e8edf5;
+    --border: #c8d3e8;
+    --blue: #2563eb;
+    --blue-hover: #1d4ed8;
+    --blue-dim: #dbeafe;
+    --accent: #d97706;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --text: #1e2340;
+    --muted: #6b7280;
+    --paid: #dcfce7;
+    --paid-border: #16a34a;
+    --logo-bg: #2563eb;
+    --logo-color: #fff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    transition: background .3s, color .3s;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 14px;
+    transition: background .3s, border-color .3s;
+  }
+  header .logo {
+    width: 36px; height: 36px;
+    background: var(--logo-bg);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  header h1 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; flex: 1; }
+  header span { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* TOGGLE MODO */
+  .theme-toggle {
+    margin-left: auto;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* MONTH NAV */
+  .month-nav {
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    padding: 20px 24px 0;
+  }
+  .month-nav button {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); width: 36px; height: 36px; border-radius: 50%;
+    font-size: 1.1rem; cursor: pointer; transition: all .2s;
+  }
+  .month-nav button:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .month-nav h2 {
+    font-size: 1.1rem; font-weight: 700; text-transform: capitalize;
+    min-width: 180px; text-align: center; letter-spacing: 1px;
+  }
+
+  /* RESUMEN */
+  .resumen {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; padding: 20px 24px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    transition: background .3s, border-color .3s;
+  }
+  .card .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .card .amount { font-size: 1.3rem; font-weight: 800; font-family: 'DM Mono', monospace; }
+  .card.sueldo .amount { color: var(--success); }
+  .card.deudas .amount { color: var(--danger); }
+  .card.balance .amount { color: var(--blue); }
+
+  /* SUELDO */
+  .sueldo-section { padding: 20px 24px 0; }
+  .sueldo-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-wrap: wrap;
+    transition: background .3s, border-color .3s;
+  }
+  .sueldo-box .info { display: flex; flex-direction: column; gap: 2px; }
+  .sueldo-box .info .lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .sueldo-box .info .val { font-size: 1.4rem; font-weight: 800; color: var(--success); font-family: 'DM Mono', monospace; }
+  .sueldo-box .controls { display: flex; gap: 8px; align-items: center; }
+  .sueldo-box input[type=number] {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'DM Mono', monospace;
+    padding: 8px 12px; border-radius: 8px; font-size: 1rem; width: 140px;
+    outline: none; transition: border-color .2s;
+  }
+  .sueldo-box input[type=number]:focus { border-color: var(--blue); }
+
+  /* SECCIÓN CUENTAS */
+  .section-title {
+    padding: 24px 24px 10px;
+    font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
+  }
+  .cuentas-list { padding: 0 24px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* CUENTA ITEM */
+  .cuenta-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .2s, background .3s;
+  }
+  .cuenta-item.pagada {
+    background: var(--paid);
+    border-color: var(--paid-border);
+    opacity: 0.8;
+  }
+  .cuenta-item .main-row {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  }
+  .cuenta-item .icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+  .cuenta-item .info { flex: 1; }
+  .cuenta-item .nombre { font-size: 0.95rem; font-weight: 700; }
+  .cuenta-item .tipo-tag {
+    display: inline-block;
+    font-size: 0.6rem; font-family: 'DM Mono', monospace;
+    text-transform: uppercase; letter-spacing: 1px;
+    background: var(--surface2); color: var(--muted);
+    padding: 2px 7px; border-radius: 4px; margin-top: 2px;
+  }
+  .cuenta-item .monto {
+    font-size: 1.1rem; font-weight: 800; font-family: 'DM Mono', monospace;
+    color: #f5a623; min-width: 100px; text-align: right;
+  }
+  .cuenta-item.pagada .monto { color: var(--success); text-decoration: line-through; }
+  .cuenta-item .actions { display: flex; gap: 6px; margin-left: 8px; }
+
+  /* BOTONES ICONO — azul como base */
+  .btn-icon {
+    background: var(--blue-dim);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    width: 32px; height: 32px; border-radius: 8px;
+    font-size: 0.9rem; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-icon:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn-icon.danger { border-color: var(--danger); color: var(--danger); background: transparent; }
+  .btn-icon.danger:hover { background: var(--danger); color: #fff; }
+  .btn-icon.success { border-color: var(--success); color: var(--success); background: transparent; }
+  .btn-icon.success:hover { background: var(--success); color: #fff; }
+
+  /* DETALLE EXPANDIBLE */
+  .detalle { padding: 0 16px 14px; display: none; border-top: 1px solid var(--border); padding-top: 12px; }
+  .detalle.open { display: block; }
+  .detalle textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.8rem;
+    padding: 8px; border-radius: 8px; resize: vertical; min-height: 60px; outline: none;
+    transition: border-color .2s;
+  }
+  .detalle textarea:focus { border-color: var(--blue); }
+  .detalle .nota-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+
+  /* NUEVA CUENTA */
+  .nueva-cuenta-section { padding: 24px 24px 0; }
+  .nueva-cuenta-box {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    transition: background .3s, border-color .3s;
+  }
+  .nueva-cuenta-box .title { font-size: 0.75rem; color: var(--blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; font-weight: 700; }
+  .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .form-row input, .form-row select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Syne', sans-serif;
+    padding: 10px 12px; border-radius: 8px; font-size: 0.9rem;
+    outline: none; transition: border-color .2s;
+  }
+  .form-row input:focus, .form-row select:focus { border-color: var(--blue); }
+  .form-row input.nombre-input { flex: 2; min-width: 150px; }
+  .form-row input.monto-input { flex: 1; min-width: 110px; }
+  .form-row select { flex: 1; min-width: 120px; }
+  .btn-add {
+    background: var(--blue); color: #fff;
+    border: none; padding: 10px 20px; border-radius: 8px;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .btn-add:hover { background: var(--blue-hover); }
+
+  /* ICONO POR TIPO — modo oscuro */
+  .ic-tarjeta { background: #2d1f6e; }
+  .ic-prestamo { background: #3d2020; }
+  .ic-mp { background: #1a3050; }
+  .ic-servicio { background: #1a3530; }
+  .ic-luz { background: #2d2a00; }
+  .ic-alquiler { background: #2d2a10; }
+  .ic-otro { background: #252535; }
+  body.light .ic-tarjeta { background: #ede9fe; }
+  body.light .ic-prestamo { background: #fee2e2; }
+  body.light .ic-mp { background: #dbeafe; }
+  body.light .ic-servicio { background: #d1fae5; }
+  body.light .ic-luz { background: #fef9c3; }
+  body.light .ic-alquiler { background: #fef9c3; }
+  body.light .ic-otro { background: #f3f4f6; }
+
+  /* HISTORIAL */
+  .historial-section { padding: 24px 24px 0; }
+  .historial-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    max-height: 220px; overflow-y: auto;
+    transition: background .3s, border-color .3s;
+  }
+  .historial-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+  .historial-item:last-child { border-bottom: none; }
+  .historial-item .hi-nombre { font-weight: 600; }
+  .historial-item .hi-mes { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.7rem; }
+  .historial-item .hi-monto { font-family: 'DM Mono', monospace; color: var(--success); font-weight: 700; }
+  .empty { color: var(--muted); font-size: 0.8rem; text-align: center; padding: 20px; font-family: 'DM Mono', monospace; }
+
+  /* RESPONSIVE */
+  @media(max-width: 520px) {
+    .resumen { grid-template-columns: 1fr 1fr; }
+    .resumen .card:last-child { grid-column: 1/-1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">💰</div>
+  <div>
+    <h1>Mis Finanzas</h1>
+    <span id="header-sub">Control de cuentas</span>
+  </div>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTema()" title="Cambiar modo claro/oscuro">🌙</button>
+</header>
+
+<div class="month-nav">
+  <button onclick="cambiarMes(-1)">‹</button>
+  <h2 id="mes-titulo"></h2>
+  <button onclick="cambiarMes(1)">›</button>
+</div>
+
+<div class="resumen">
+  <div class="card sueldo">
+    <div class="label">💼 Sueldo</div>
+    <div class="amount" id="res-sueldo">$0</div>
+  </div>
+  <div class="card deudas">
+    <div class="label">📋 A pagar</div>
+    <div class="amount" id="res-deudas">$0</div>
+  </div>
+  <div class="card balance">
+    <div class="label">⚡ Disponible</div>
+    <div class="amount" id="res-balance">$0</div>
+  </div>
+</div>
+
+<div class="sueldo-section">
+  <div class="sueldo-box">
+    <div class="info">
+      <span class="lbl">💼 Sueldo mensual — Maltería Quilmes</span>
+      <span class="val" id="sueldo-display">$0</span>
+    </div>
+    <div class="controls">
+      <input type="number" id="sueldo-input" placeholder="Ingresá tu sueldo" min="0">
+      <button class="btn-add" onclick="guardarSueldo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">📋 Cuentas del mes</div>
+<div class="cuentas-list" id="lista-cuentas"></div>
+
+<div class="nueva-cuenta-section">
+  <div class="nueva-cuenta-box">
+    <div class="title">+ Agregar cuenta</div>
+    <div class="form-row">
+      <input type="text" class="nombre-input" id="nueva-nombre" placeholder="Nombre de la cuenta">
+      <input type="number" class="monto-input" id="nueva-monto" placeholder="Monto $" min="0">
+      <select id="nueva-tipo">
+        <option value="tarjeta">💳 Tarjeta</option>
+        <option value="prestamo">🏦 Préstamo</option>
+        <option value="mp">📱 MercadoPago</option>
+        <option value="servicio">🔌 Servicio</option>
+        <option value="luz">⚡ Luz</option>
+        <option value="alquiler">🏠 Alquiler</option>
+        <option value="otro">📌 Otro</option>
+      </select>
+      <button class="btn-add" onclick="agregarCuenta()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<div class="historial-section">
+  <div class="section-title">✅ Historial de pagos</div>
+  <div class="historial-box" id="historial-lista"></div>
+</div>
+
+<script>
+// ───── Estado ─────
+let mesActual = new Date().getMonth();
+let anioActual = new Date().getFullYear();
+
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function clavesMes(mes, anio) { return `${anio}-${String(mes).padStart(2,'0')}`; }
+
+function cargarDatos() {
+  return JSON.parse(localStorage.getItem('finanzas_v2') || '{}');
+}
+function guardarDatos(data) {
+  localStorage.setItem('finanzas_v2', JSON.stringify(data));
+}
+
+function getDatosMes(mes, anio) {
+  const data = cargarDatos();
+  const k = clavesMes(mes, anio);
+  if (!data[k]) data[k] = { sueldo: 0, cuentas: [], pagadas: [] };
+  return data[k];
+}
+
+function setDatosMes(mes, anio, obj) {
+  const data = cargarDatos();
+  const k = clavesMes(mes, anio);
+  data[k] = obj;
+  guardarDatos(data);
+}
+
+// ───── Render principal ─────
+function render() {
+  const d = getDatosMes(mesActual, anioActual);
+  document.getElementById('mes-titulo').textContent = `${MESES[mesActual]} ${anioActual}`;
+  document.getElementById('header-sub').textContent = `${MESES[mesActual]} ${anioActual}`;
+
+  // Sueldo
+  document.getElementById('sueldo-display').textContent = fmt(d.sueldo);
+  document.getElementById('sueldo-input').value = d.sueldo || '';
+
+  // Resumen
+  const totalDeudas = d.cuentas.reduce((s,c) => s + Number(c.monto), 0);
+  const totalPagado = d.cuentas.filter(c => d.pagadas.includes(c.id)).reduce((s,c) => s + Number(c.monto), 0);
+  const pendiente = totalDeudas - totalPagado;
+  document.getElementById('res-sueldo').textContent = fmt(d.sueldo);
+  document.getElementById('res-deudas').textContent = fmt(pendiente);
+  document.getElementById('res-balance').textContent = fmt(d.sueldo - pendiente);
+
+  // Lista
+  const lista = document.getElementById('lista-cuentas');
+  lista.innerHTML = '';
+  if (d.cuentas.length === 0) {
+    lista.innerHTML = '<div class="empty">No hay cuentas este mes. Agregá una abajo ↓</div>';
+    return;
+  }
+  d.cuentas.forEach(c => {
+    const pagada = d.pagadas.includes(c.id);
+    const el = document.createElement('div');
+    el.className = 'cuenta-item' + (pagada ? ' pagada' : '');
+    el.innerHTML = `
+      <div class="main-row">
+        <div class="icon ${iconClass(c.tipo)}">${iconEmoji(c.tipo)}</div>
+        <div class="info">
+          <div class="nombre">${c.nombre}</div>
+          <span class="tipo-tag">${tipoLabel(c.tipo)}</span>
+        </div>
+        <div class="monto" id="monto-display-${c.id}" onclick="activarEdicionMonto('${c.id}')" title="Clic para editar monto" style="cursor:pointer;text-decoration:underline dotted var(--muted)">${fmt(c.monto)}</div>
+        <div id="monto-edit-${c.id}" style="display:none;align-items:center;gap:6px;">
+          <input type="number" id="monto-input-${c.id}" value="${c.monto}" min="0"
+            style="background:var(--surface2);border:1px solid var(--accent);color:var(--text);font-family:'DM Mono',monospace;padding:5px 8px;border-radius:8px;font-size:0.95rem;width:110px;outline:none;"
+            onkeydown="if(event.key==='Enter') guardarMonto('${c.id}'); if(event.key==='Escape') cancelarEdicion('${c.id}')">
+          <button class="btn-icon success" onclick="guardarMonto('${c.id}')" title="Guardar">✓</button>
+          <button class="btn-icon" onclick="cancelarEdicion('${c.id}')" title="Cancelar">✕</button>
+        </div>
+        <div class="actions">
+          <button class="btn-icon ${pagada ? 'success' : ''}" title="${pagada ? 'Marcar pendiente' : 'Marcar como pagada'}" onclick="togglePago('${c.id}')">${pagada ? '✓' : '○'}</button>
+          <button class="btn-icon" title="Nota" onclick="toggleDetalle('detalle-${c.id}')">📝</button>
+          <button class="btn-icon danger" title="Eliminar" onclick="eliminarCuenta('${c.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="detalle" id="detalle-${c.id}">
+        <div class="nota-label">Nota / detalle</div>
+        <textarea placeholder="Agregá una nota..." onchange="guardarNota('${c.id}', this.value)">${c.nota || ''}</textarea>
+      </div>
+    `;
+    lista.appendChild(el);
+  });
+
+  renderHistorial();
+}
+
+function renderHistorial() {
+  const data = cargarDatos();
+  const historial = [];
+  Object.entries(data).forEach(([k, d]) => {
+    if (!d.pagadas || !d.cuentas) return;
+    d.cuentas.forEach(c => {
+      if (d.pagadas.includes(c.id)) {
+        const [anio, mes] = k.split('-');
+        historial.push({ ...c, mesLabel: `${MESES[parseInt(mes)-1]} ${anio}` });
+      }
+    });
+  });
+  historial.sort((a,b) => b.mesLabel > a.mesLabel ? 1 : -1);
+  const el = document.getElementById('historial-lista');
+  if (historial.length === 0) {
+    el.innerHTML = '<div class="empty">Aún no marcaste ningún pago como pagado.</div>';
+    return;
+  }
+  el.innerHTML = historial.slice(0,30).map(h => `
+    <div class="historial-item">
+      <div>
+        <div class="hi-nombre">✅ ${h.nombre}</div>
+        <div class="hi-mes">${h.mesLabel}</div>
+      </div>
+      <div class="hi-monto">${fmt(h.monto)}</div>
+    </div>
+  `).join('');
+}
+
+// ───── Acciones ─────
+function guardarSueldo() {
+  const val = parseFloat(document.getElementById('sueldo-input').value) || 0;
+  const d = getDatosMes(mesActual, anioActual);
+  d.sueldo = val;
+  setDatosMes(mesActual, anioActual, d);
+  render();
+}
+
+function agregarCuenta() {
+  const nombre = document.getElementById('nueva-nombre').value.trim();
+  const monto = parseFloat(document.getElementById('nueva-monto').value) || 0;
+  const tipo = document.getElementById('nueva-tipo').value;
+  if (!nombre || !monto) { alert('Completá nombre y monto'); return; }
+  const d = getDatosMes(mesActual, anioActual);
+  d.cuentas.push({ id: Date.now().toString(), nombre, monto, tipo, nota: '' });
+  setDatosMes(mesActual, anioActual, d);
+  document.getElementById('nueva-nombre').value = '';
+  document.getElementById('nueva-monto').value = '';
+  render();
+}
+
+function togglePago(id) {
+  const d = getDatosMes(mesActual, anioActual);
+  if (d.pagadas.includes(id)) {
+    d.pagadas = d.pagadas.filter(p => p !== id);
+  } else {
+    d.pagadas.push(id);
+  }
+  setDatosMes(mesActual, anioActual, d);
+  render();
+}
+
+function eliminarCuenta(id) {
+  if (!confirm('¿Eliminar esta cuenta?')) return;
+  const d = getDatosMes(mesActual, anioActual);
+  d.cuentas = d.cuentas.filter(c => c.id !== id);
+  d.pagadas = d.pagadas.filter(p => p !== id);
+  setDatosMes(mesActual, anioActual, d);
+  render();
+}
+
+function guardarNota(id, valor) {
+  const d = getDatosMes(mesActual, anioActual);
+  const c = d.cuentas.find(c => c.id === id);
+  if (c) c.nota = valor;
+  setDatosMes(mesActual, anioActual, d);
+}
+
+function activarEdicionMonto(id) {
+  document.getElementById('monto-display-' + id).style.display = 'none';
+  const edit = document.getElementById('monto-edit-' + id);
+  edit.style.display = 'flex';
+  document.getElementById('monto-input-' + id).focus();
+}
+
+function guardarMonto(id) {
+  const val = parseFloat(document.getElementById('monto-input-' + id).value) || 0;
+  const d = getDatosMes(mesActual, anioActual);
+  const c = d.cuentas.find(c => c.id === id);
+  if (c) c.monto = val;
+  setDatosMes(mesActual, anioActual, d);
+  render();
+}
+
+function cancelarEdicion(id) {
+  document.getElementById('monto-edit-' + id).style.display = 'none';
+  document.getElementById('monto-display-' + id).style.display = '';
+}
+
+function toggleDetalle(elId) {
+  const el = document.getElementById(elId);
+  el.classList.toggle('open');
+}
+
+function cambiarMes(delta) {
+  mesActual += delta;
+  if (mesActual > 11) { mesActual = 0; anioActual++; }
+  if (mesActual < 0)  { mesActual = 11; anioActual--; }
+  render();
+}
+
+// ───── Helpers ─────
+function fmt(n) {
+  return '$' + (parseFloat(n)||0).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function iconClass(tipo) {
+  return { tarjeta: 'ic-tarjeta', prestamo: 'ic-prestamo', mp: 'ic-mp', servicio: 'ic-servicio', luz: 'ic-luz', alquiler: 'ic-alquiler', otro: 'ic-otro' }[tipo] || 'ic-otro';
+}
+function iconEmoji(tipo) {
+  return { tarjeta: '💳', prestamo: '🏦', mp: '📱', servicio: '🔌', luz: '⚡', alquiler: '🏠', otro: '📌' }[tipo] || '📌';
+}
+function tipoLabel(tipo) {
+  return { tarjeta: 'Tarjeta', prestamo: 'Préstamo', mp: 'MercadoPago', servicio: 'Servicio', luz: 'Luz', alquiler: 'Alquiler', otro: 'Otro' }[tipo] || tipo;
+}
+
+// ───── Datos iniciales ─────
+function cargarDatosIniciales() {
+  const k = clavesMes(mesActual, anioActual);
+  const data = cargarDatos();
+  if (!data[k] || data[k].cuentas.length === 0) {
+    const d = getDatosMes(mesActual, anioActual);
+    if (d.cuentas.length === 0) {
+      d.cuentas = [
+        { id: 'naranja1',  nombre: 'Tarjeta Naranja',           monto: 0, tipo: 'tarjeta',  nota: '' },
+        { id: 'naranja2',  nombre: 'Préstamo Tarjeta Naranja',  monto: 0, tipo: 'prestamo', nota: '' },
+        { id: 'mp1',       nombre: 'MercadoPago Crédito',       monto: 0, tipo: 'mp',       nota: '' },
+        { id: 'mp2',       nombre: 'MercadoPago Dinero Plus',   monto: 0, tipo: 'mp',       nota: '' },
+        { id: 'claro1',    nombre: 'Teléfono e Internet Claro', monto: 0, tipo: 'servicio', nota: '' },
+        { id: 'colegio1',  nombre: 'Colegio',                   monto: 0, tipo: 'otro',     nota: '' },
+        { id: 'grupal1',   nombre: 'Viaje Empresa Grupal',      monto: 0, tipo: 'otro',     nota: '' },
+        { id: 'alquiler1', nombre: 'Alquiler',                  monto: 0, tipo: 'alquiler', nota: '' },
+        { id: 'servicios1',nombre: 'Servicios',                 monto: 0, tipo: 'servicio', nota: '' },
+        { id: 'luz1',      nombre: 'Luz',                       monto: 0, tipo: 'servicio', nota: '' },
+      ];
+      setDatosMes(mesActual, anioActual, d);
+    }
+  }
+}
+
+cargarDatosIniciales();
+render();
+
+// ── TEMA ──
+function toggleTema() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-toggle').textContent = isLight ? '🌙' : '☀️';
+  localStorage.setItem('finanzas_tema', isLight ? 'light' : 'dark');
+}
+(function() {
+  const tema = localStorage.getItem('finanzas_tema');
+  if (tema === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('theme-toggle').textContent = '🌙';
+  }
+})();
+// ── Registro PWA Service Worker ──
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(r => console.log("SW registrado:", r.scope))
+      .catch(e => console.log("SW error:", e));
+  });
+}
+</script>
+</body>
+</html>
