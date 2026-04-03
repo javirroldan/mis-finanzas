@@ -465,6 +465,29 @@
   <div class="historial-box" id="historial-lista"></div>
 </div>
 
+<!-- SECCIÓN BACKUP / CONFIGURACIÓN -->
+<div class="section-title">🔧 Configuración</div>
+<div class="backup-section" style="padding: 0 24px 40px;">
+  <div class="backup-box" style="background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px;">
+    <div style="font-size: 0.75rem; color: var(--blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; font-weight: 700;">Backup y Restauración</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+      <button class="btn-modal btn-modal-secondary" onclick="exportarDatos()" style="flex: 1; min-width: 140px; padding: 12px;">
+        💾 Exportar JSON
+      </button>
+      <button class="btn-modal btn-modal-secondary" onclick="document.getElementById('importar-input').click()" style="flex: 1; min-width: 140px; padding: 12px;">
+        📂 Importar JSON
+      </button>
+      <input type="file" id="importar-input" accept=".json" onchange="importarDatos(this)" style="display: none;">
+    </div>
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <button class="btn-modal btn-modal-danger" onclick="borrarTodosLosDatos()" style="width: 100%; padding: 12px; background: transparent; border: 1px solid var(--danger); color: var(--danger);">
+        🗑️ Borrar todos los datos
+      </button>
+    </div>
+    <div id="backup-status" style="margin-top: 12px; font-size: 0.8rem; text-align: center; min-height: 20px;"></div>
+  </div>
+</div>
+
 <!-- MODAL BOTTOM SHEET PARA AGREGAR CUENTA -->
 <div class="modal-overlay" id="modal-nueva-cuenta" onclick="cerrarModalNuevaCuenta(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
@@ -921,6 +944,82 @@ function toggleTema() {
     document.getElementById('theme-toggle').textContent = '🌙';
   }
 })();
+// ───── Funciones de Backup ─────
+function exportarDatos() {
+  const data = cargarDatos();
+  const datosCompletos = {
+    version: '2.0',
+    exportado: new Date().toISOString(),
+    datos: data
+  };
+  const blob = new Blob([JSON.stringify(datosCompletos, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `finanzas-backup-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  mostrarStatusBackup('✅ Datos exportados correctamente', 'success');
+}
+
+function importarDatos(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+
+      // Validar estructura
+      if (!backup.datos || typeof backup.datos !== 'object') {
+        throw new Error('El archivo no tiene el formato correcto');
+      }
+
+      if (!confirm('⚠️ Esto reemplazará todos los datos actuales. ¿Continuar?')) {
+        input.value = '';
+        return;
+      }
+
+      // Guardar datos
+      localStorage.setItem('finanzas_v2', JSON.stringify(backup.datos));
+
+      // Restaurar tema si existe
+      if (backup.tema) {
+        localStorage.setItem('finanzas_tema', backup.tema);
+      }
+
+      mostrarStatusBackup('✅ Datos importados correctamente. Recargando...', 'success');
+      setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+      mostrarStatusBackup('❌ Error: ' + err.message, 'error');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function borrarTodosLosDatos() {
+  if (!confirm('⚠️ ¿Estás seguro? Esto eliminará TODOS los datos permanentemente.')) return;
+  if (!confirm('🚨 Última advertencia: ¿Seguro que querés borrar todo?')) return;
+
+  localStorage.removeItem('finanzas_v2');
+  localStorage.removeItem('finanzas_tema');
+  mostrarStatusBackup('✅ Todos los datos han sido eliminados. Recargando...', 'success');
+  setTimeout(() => location.reload(), 1500);
+}
+
+function mostrarStatusBackup(mensaje, tipo) {
+  const statusEl = document.getElementById('backup-status');
+  statusEl.textContent = mensaje;
+  statusEl.style.color = tipo === 'success' ? 'var(--success)' : 'var(--danger)';
+  setTimeout(() => {
+    statusEl.textContent = '';
+  }, 5000);
+}
+
 // ── Registro PWA Service Worker ──
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
