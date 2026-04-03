@@ -226,6 +226,115 @@
   .detalle textarea:focus { border-color: var(--blue); }
   .detalle .nota-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
 
+  /* MODAL BOTTOM SHEET */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .modal-overlay.open {
+    display: flex;
+    opacity: 1;
+  }
+  .modal-sheet {
+    background: var(--surface);
+    width: 100%;
+    max-width: 500px;
+    max-height: 85vh;
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+  }
+  .modal-overlay.open .modal-sheet {
+    transform: translateY(0);
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-header .icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .modal-header .info { flex: 1; }
+  .modal-header .nombre { font-size: 1.1rem; font-weight: 700; }
+  .modal-header .tipo-tag {
+    display: inline-block;
+    font-size: 0.65rem; font-family: 'DM Mono', monospace;
+    text-transform: uppercase; letter-spacing: 1px;
+    background: var(--surface2); color: var(--muted);
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .modal-close {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); width: 36px; height: 36px;
+    border-radius: 50%; font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  .modal-section { margin-bottom: 20px; }
+  .modal-section label {
+    display: block; font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .modal-section input, .modal-section select, .modal-section textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Syne', sans-serif;
+    padding: 12px; border-radius: 10px; font-size: 0.95rem;
+    outline: none; transition: border-color .2s;
+  }
+  .modal-section input:focus, .modal-section select:focus, .modal-section textarea:focus { border-color: var(--blue); }
+  .modal-section textarea {
+    min-height: 80px; resize: vertical; font-family: 'DM Mono', monospace; font-size: 0.85rem;
+  }
+
+  .modal-actions {
+    display: flex; gap: 10px; margin-top: 24px;
+    padding-top: 20px; border-top: 1px solid var(--border);
+  }
+  .btn-modal {
+    flex: 1; padding: 14px; border-radius: 12px; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all .2s;
+    border: none; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-modal-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-modal-secondary:hover { background: var(--border); }
+  .btn-modal-danger { background: var(--danger); color: #fff; }
+  .btn-modal-danger:hover { opacity: 0.9; }
+  .btn-modal-success {
+    background: var(--success); color: #fff;
+  }
+  .btn-modal-success:hover { opacity: 0.9; }
+  .btn-modal-success.inactive {
+    background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .btn-modal-success.inactive:hover { background: var(--border); color: var(--text); }
+
+  .modal-monto-display {
+    font-size: 2rem; font-weight: 800; font-family: 'DM Mono', monospace;
+    color: var(--accent); text-align: center; margin: 10px 0;
+  }
+  .modal-monto-display.pagada {
+    color: var(--success);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
   /* NUEVA CUENTA */
   .nueva-cuenta-section { padding: 24px 24px 0; }
   .nueva-cuenta-box {
@@ -289,32 +398,6 @@
   .historial-item .hi-monto { font-family: 'DM Mono', monospace; color: var(--success); font-weight: 700; }
   .empty { color: var(--muted); font-size: 0.8rem; text-align: center; padding: 20px; font-family: 'DM Mono', monospace; }
 
-
-  /* BACKUP */
-  .backup-section { padding: 24px 24px 0; }
-  .backup-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    transition: background .3s, border-color .3s;
-  }
-  .backup-box .title { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; font-weight: 700; }
-  .backup-row { display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn-backup {
-    flex: 1; min-width: 130px;
-    padding: 10px 16px; border-radius: 8px;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
-    cursor: pointer; transition: all .2s; border: none;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .btn-backup.export { background: #1e3a5f; color: #60a5fa; border: 1px solid #3b82f6; }
-  .btn-backup.export:hover { background: #3b82f6; color: #fff; }
-  .btn-backup.import { background: transparent; color: var(--success); border: 1px solid var(--success); }
-  .btn-backup.import:hover { background: var(--success); color: #fff; }
-  .btn-backup.danger-clear { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
-  .btn-backup.danger-clear:hover { background: var(--danger); color: #fff; }
-  body.light .btn-backup.export { background: #dbeafe; color: #2563eb; }
   /* RESPONSIVE */
   @media(max-width: 520px) {
     .resumen { grid-template-columns: 1fr 1fr; }
@@ -371,22 +454,9 @@
 <div class="cuentas-list" id="lista-cuentas"></div>
 
 <div class="nueva-cuenta-section">
-  <div class="nueva-cuenta-box">
+  <div class="nueva-cuenta-box" onclick="abrirModalNuevaCuenta()" style="cursor: pointer;">
     <div class="title">+ Agregar cuenta</div>
-    <div class="form-row">
-      <input type="text" class="nombre-input" id="nueva-nombre" placeholder="Nombre de la cuenta">
-      <input type="number" class="monto-input" id="nueva-monto" placeholder="Monto $" min="0">
-      <select id="nueva-tipo">
-        <option value="tarjeta">💳 Tarjeta</option>
-        <option value="prestamo">🏦 Préstamo</option>
-        <option value="mp">📱 MercadoPago</option>
-        <option value="servicio">🔌 Servicio</option>
-        <option value="luz">⚡ Luz</option>
-        <option value="alquiler">🏠 Alquiler</option>
-        <option value="otro">📌 Otro</option>
-      </select>
-      <button class="btn-add" onclick="agregarCuenta()">Agregar</button>
-    </div>
+    <div style="color: var(--muted); font-size: 0.85rem; text-align: center;">Tocá para agregar una nueva cuenta</div>
   </div>
 </div>
 
@@ -395,16 +465,110 @@
   <div class="historial-box" id="historial-lista"></div>
 </div>
 
-
-<div class="backup-section">
-  <div class="backup-box">
-    <div class="title">💾 Backup de datos</div>
-    <div class="backup-row">
-      <button class="btn-backup export" onclick="exportarDatos()">⬇️ Exportar backup</button>
-      <button class="btn-backup import" onclick="document.getElementById('import-file').click()">⬆️ Importar backup</button>
-      <button class="btn-backup danger-clear" onclick="borrarTodo()">🗑 Borrar todo</button>
+<!-- MODAL BOTTOM SHEET PARA AGREGAR CUENTA -->
+<div class="modal-overlay" id="modal-nueva-cuenta" onclick="cerrarModalNuevaCuenta(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon ic-otro" id="modal-nueva-icon">➕</div>
+      <div class="info">
+        <div class="nombre">Nueva Cuenta</div>
+        <span class="tipo-tag">Agregar nueva cuenta</span>
+      </div>
+      <button class="modal-close" onclick="cerrarModalNuevaCuenta()" title="Cerrar">✕</button>
     </div>
-    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importarDatos(event)">
+
+    <div class="modal-section">
+      <label>Nombre de la cuenta *</label>
+      <input type="text" id="modal-nueva-nombre" placeholder="Ej: Tarjeta Naranja">
+    </div>
+
+    <div class="modal-section">
+      <label>Monto *</label>
+      <input type="number" id="modal-nueva-monto" placeholder="0" min="0">
+    </div>
+
+    <div class="modal-section">
+      <label>Tipo de cuenta</label>
+      <select id="modal-nueva-tipo" onchange="actualizarIconoNuevaCuenta()">
+        <option value="tarjeta">💳 Tarjeta</option>
+        <option value="prestamo">🏦 Préstamo</option>
+        <option value="mp">📱 MercadoPago</option>
+        <option value="servicio">🔌 Servicio</option>
+        <option value="luz">⚡ Luz</option>
+        <option value="alquiler">🏠 Alquiler</option>
+        <option value="otro">📌 Otro</option>
+      </select>
+    </div>
+
+    <div class="modal-section">
+      <label>Descripción / Nota</label>
+      <textarea id="modal-nueva-nota" placeholder="Agregá una descripción o detalle opcional..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal btn-modal-secondary" onclick="cerrarModalNuevaCuenta()">
+        Cancelar
+      </button>
+      <button class="btn-modal btn-modal-success" onclick="guardarNuevaCuenta()">
+        💾 Agregar Cuenta
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BOTTOM SHEET PARA EDITAR CUENTA -->
+<div class="modal-overlay" id="modal-cuenta" onclick="cerrarModalCuenta(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon" id="modal-icon">💳</div>
+      <div class="info">
+        <div class="nombre" id="modal-nombre-display">Cuenta</div>
+        <span class="tipo-tag" id="modal-tipo-display">Tipo</span>
+      </div>
+      <button class="modal-close" onclick="cerrarModalCuenta()" title="Cerrar">✕</button>
+    </div>
+
+    <div class="modal-monto-display" id="modal-monto-display">$0</div>
+
+    <div class="modal-section">
+      <label>Nombre de la cuenta</label>
+      <input type="text" id="modal-input-nombre" placeholder="Ej: Tarjeta Naranja">
+    </div>
+
+    <div class="modal-section">
+      <label>Monto</label>
+      <input type="number" id="modal-input-monto" placeholder="0" min="0">
+    </div>
+
+    <div class="modal-section">
+      <label>Tipo de cuenta</label>
+      <select id="modal-input-tipo">
+        <option value="tarjeta">💳 Tarjeta</option>
+        <option value="prestamo">🏦 Préstamo</option>
+        <option value="mp">📱 MercadoPago</option>
+        <option value="servicio">🔌 Servicio</option>
+        <option value="luz">⚡ Luz</option>
+        <option value="alquiler">🏠 Alquiler</option>
+        <option value="otro">📌 Otro</option>
+      </select>
+    </div>
+
+    <div class="modal-section">
+      <label>Descripción / Nota</label>
+      <textarea id="modal-input-nota" placeholder="Agregá una descripción más detallada..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal btn-modal-danger" onclick="eliminarCuentaDesdeModal()">
+        🗑 Eliminar
+      </button>
+      <button class="btn-modal btn-modal-success" id="modal-btn-pago" onclick="togglePagoDesdeModal()">
+        Marcar pagada
+      </button>
+      <button class="btn-modal btn-modal-secondary" onclick="guardarCambiosModal()">
+        💾 Guardar
+      </button>
+    </div>
   </div>
 </div>
 
@@ -467,6 +631,8 @@ function render() {
     const pagada = d.pagadas.includes(c.id);
     const el = document.createElement('div');
     el.className = 'cuenta-item' + (pagada ? ' pagada' : '');
+    el.style.cursor = 'pointer';
+    el.onclick = () => abrirModalCuenta(c.id);
     el.innerHTML = `
       <div class="main-row">
         <div class="icon ${iconClass(c.tipo)}">${iconEmoji(c.tipo)}</div>
@@ -474,23 +640,7 @@ function render() {
           <div class="nombre">${c.nombre}</div>
           <span class="tipo-tag">${tipoLabel(c.tipo)}</span>
         </div>
-        <div class="monto" id="monto-display-${c.id}" onclick="activarEdicionMonto('${c.id}')" title="Clic para editar monto" style="cursor:pointer;text-decoration:underline dotted var(--muted)">${fmt(c.monto)}</div>
-        <div id="monto-edit-${c.id}" style="display:none;align-items:center;gap:6px;">
-          <input type="number" id="monto-input-${c.id}" value="${c.monto}" min="0"
-            style="background:var(--surface2);border:1px solid var(--accent);color:var(--text);font-family:'DM Mono',monospace;padding:5px 8px;border-radius:8px;font-size:0.95rem;width:110px;outline:none;"
-            onkeydown="if(event.key==='Enter') guardarMonto('${c.id}'); if(event.key==='Escape') cancelarEdicion('${c.id}')">
-          <button class="btn-icon success" onclick="guardarMonto('${c.id}')" title="Guardar">✓</button>
-          <button class="btn-icon" onclick="cancelarEdicion('${c.id}')" title="Cancelar">✕</button>
-        </div>
-        <div class="actions">
-          <button class="btn-icon ${pagada ? 'success' : ''}" title="${pagada ? 'Marcar pendiente' : 'Marcar como pagada'}" onclick="togglePago('${c.id}')">${pagada ? '✓' : '○'}</button>
-          <button class="btn-icon" title="Nota" onclick="toggleDetalle('detalle-${c.id}')">📝</button>
-          <button class="btn-icon danger" title="Eliminar" onclick="eliminarCuenta('${c.id}')">🗑</button>
-        </div>
-      </div>
-      <div class="detalle" id="detalle-${c.id}">
-        <div class="nota-label">Nota / detalle</div>
-        <textarea placeholder="Agregá una nota..." onchange="guardarNota('${c.id}', this.value)">${c.nota || ''}</textarea>
+        <div class="monto ${pagada ? 'pagada' : ''}">${fmt(c.monto)}</div>
       </div>
     `;
     lista.appendChild(el);
@@ -537,17 +687,57 @@ function guardarSueldo() {
   render();
 }
 
-function agregarCuenta() {
-  const nombre = document.getElementById('nueva-nombre').value.trim();
-  const monto = parseFloat(document.getElementById('nueva-monto').value) || 0;
-  const tipo = document.getElementById('nueva-tipo').value;
-  if (!nombre || !monto) { alert('Completá nombre y monto'); return; }
+// ───── MODAL NUEVA CUENTA ─────
+function abrirModalNuevaCuenta() {
+  document.getElementById('modal-nueva-cuenta').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  actualizarIconoNuevaCuenta();
+  // Focus en el primer campo
+  setTimeout(() => document.getElementById('modal-nueva-nombre').focus(), 100);
+}
+
+function cerrarModalNuevaCuenta(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('modal-nueva-cuenta').classList.remove('open');
+  document.body.style.overflow = '';
+  limpiarFormularioNuevaCuenta();
+}
+
+function limpiarFormularioNuevaCuenta() {
+  document.getElementById('modal-nueva-nombre').value = '';
+  document.getElementById('modal-nueva-monto').value = '';
+  document.getElementById('modal-nueva-tipo').value = 'tarjeta';
+  document.getElementById('modal-nueva-nota').value = '';
+}
+
+function actualizarIconoNuevaCuenta() {
+  const tipo = document.getElementById('modal-nueva-tipo').value;
+  const iconEl = document.getElementById('modal-nueva-icon');
+  iconEl.textContent = iconEmoji(tipo);
+  iconEl.className = 'icon ' + iconClass(tipo);
+}
+
+function guardarNuevaCuenta() {
+  const nombre = document.getElementById('modal-nueva-nombre').value.trim();
+  const monto = parseFloat(document.getElementById('modal-nueva-monto').value) || 0;
+  const tipo = document.getElementById('modal-nueva-tipo').value;
+  const nota = document.getElementById('modal-nueva-nota').value.trim();
+
+  if (!nombre || !monto) {
+    alert('Completá nombre y monto');
+    return;
+  }
+
   const d = getDatosMes(mesActual, anioActual);
-  d.cuentas.push({ id: Date.now().toString(), nombre, monto, tipo, nota: '' });
+  d.cuentas.push({ id: Date.now().toString(), nombre, monto, tipo, nota });
   setDatosMes(mesActual, anioActual, d);
-  document.getElementById('nueva-nombre').value = '';
-  document.getElementById('nueva-monto').value = '';
+  cerrarModalNuevaCuenta();
   render();
+}
+
+function agregarCuenta() {
+  // Función legacy - redirige al modal
+  abrirModalNuevaCuenta();
 }
 
 function togglePago(id) {
@@ -577,31 +767,98 @@ function guardarNota(id, valor) {
   setDatosMes(mesActual, anioActual, d);
 }
 
-function activarEdicionMonto(id) {
-  document.getElementById('monto-display-' + id).style.display = 'none';
-  const edit = document.getElementById('monto-edit-' + id);
-  edit.style.display = 'flex';
-  document.getElementById('monto-input-' + id).focus();
-}
-
-function guardarMonto(id) {
-  const val = parseFloat(document.getElementById('monto-input-' + id).value) || 0;
-  const d = getDatosMes(mesActual, anioActual);
-  const c = d.cuentas.find(c => c.id === id);
-  if (c) c.monto = val;
-  setDatosMes(mesActual, anioActual, d);
-  render();
-}
-
-function cancelarEdicion(id) {
-  document.getElementById('monto-edit-' + id).style.display = 'none';
-  document.getElementById('monto-display-' + id).style.display = '';
-}
-
 function toggleDetalle(elId) {
   const el = document.getElementById(elId);
   el.classList.toggle('open');
 }
+
+// ───── MODAL CUENTA ─────
+let cuentaEditandoId = null;
+
+function abrirModalCuenta(id) {
+  const d = getDatosMes(mesActual, anioActual);
+  const c = d.cuentas.find(c => c.id === id);
+  if (!c) return;
+
+  cuentaEditandoId = id;
+  const pagada = d.pagadas.includes(id);
+
+  // Actualizar icono y colores
+  document.getElementById('modal-icon').textContent = iconEmoji(c.tipo);
+  document.getElementById('modal-icon').className = 'icon ' + iconClass(c.tipo);
+  document.getElementById('modal-nombre-display').textContent = c.nombre;
+  document.getElementById('modal-tipo-display').textContent = tipoLabel(c.tipo);
+  document.getElementById('modal-monto-display').textContent = fmt(c.monto);
+
+  // Cargar valores en inputs
+  document.getElementById('modal-input-nombre').value = c.nombre;
+  document.getElementById('modal-input-monto').value = c.monto;
+  document.getElementById('modal-input-tipo').value = c.tipo;
+  document.getElementById('modal-input-nota').value = c.nota || '';
+
+  // Actualizar botón de pago
+  const btnPago = document.getElementById('modal-btn-pago');
+  btnPago.textContent = pagada ? '✓ Marcar como pendiente' : '✓ Marcar como pagada';
+  btnPago.className = 'btn-modal btn-modal-success' + (pagada ? '' : ' inactive');
+
+  // Mostrar modal
+  document.getElementById('modal-cuenta').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarModalCuenta(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('modal-cuenta').classList.remove('open');
+  document.body.style.overflow = '';
+  cuentaEditandoId = null;
+}
+
+function guardarCambiosModal() {
+  if (!cuentaEditandoId) return;
+  const d = getDatosMes(mesActual, anioActual);
+  const c = d.cuentas.find(c => c.id === cuentaEditandoId);
+  if (!c) return;
+
+  c.nombre = document.getElementById('modal-input-nombre').value.trim() || c.nombre;
+  c.monto = parseFloat(document.getElementById('modal-input-monto').value) || 0;
+  c.tipo = document.getElementById('modal-input-tipo').value;
+  c.nota = document.getElementById('modal-input-nota').value.trim();
+
+  setDatosMes(mesActual, anioActual, d);
+  cerrarModalCuenta();
+  render();
+}
+
+function togglePagoDesdeModal() {
+  if (!cuentaEditandoId) return;
+  togglePago(cuentaEditandoId);
+
+  // Actualizar botón visualmente
+  const d = getDatosMes(mesActual, anioActual);
+  const pagada = d.pagadas.includes(cuentaEditandoId);
+  const btnPago = document.getElementById('modal-btn-pago');
+  btnPago.textContent = pagada ? '✓ Marcar como pendiente' : '✓ Marcar como pagada';
+  btnPago.className = 'btn-modal btn-modal-success' + (pagada ? '' : ' inactive');
+  document.getElementById('modal-monto-display').classList.toggle('pagada', pagada);
+}
+
+function eliminarCuentaDesdeModal() {
+  if (!cuentaEditandoId) return;
+  if (!confirm('¿Eliminar esta cuenta permanentemente?')) return;
+  eliminarCuenta(cuentaEditandoId);
+  cerrarModalCuenta();
+}
+
+// Cerrar con Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('modal-cuenta').classList.contains('open')) {
+      cerrarModalCuenta();
+    } else if (document.getElementById('modal-nueva-cuenta').classList.contains('open')) {
+      cerrarModalNuevaCuenta();
+    }
+  }
+});
 
 function cambiarMes(delta) {
   mesActual += delta;
@@ -664,49 +921,6 @@ function toggleTema() {
     document.getElementById('theme-toggle').textContent = '🌙';
   }
 })();
-
-// ───── Backup ─────
-function exportarDatos() {
-  const data = cargarDatos();
-  const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const fecha = new Date().toISOString().slice(0,10);
-  a.href = url;
-  a.download = 'finanzas-backup-' + fecha + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function importarDatos(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (typeof data !== 'object') throw new Error();
-      if (!confirm('Esto va a reemplazar todos tus datos actuales. ¿Confirmás?')) return;
-      localStorage.setItem('finanzas_v2', JSON.stringify(data));
-      render();
-      alert('✅ Datos importados correctamente');
-    } catch {
-      alert('❌ El archivo no es válido. Asegurate de usar un backup generado por esta app.');
-    }
-    event.target.value = '';
-  };
-  reader.readAsText(file);
-}
-
-function borrarTodo() {
-  if (!confirm('⚠️ Esto borra TODOS tus datos de todos los meses. ¿Estás seguro?')) return;
-  if (!confirm('¿Seguro seguro? No hay vuelta atrás.')) return;
-  localStorage.removeItem('finanzas_v2');
-  render();
-  alert('Datos borrados.');
-}
-
 // ── Registro PWA Service Worker ──
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
