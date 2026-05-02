@@ -1,0 +1,381 @@
+/* ── HEADER ── */
+header {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-4) var(--space-6);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-sm);
+}
+
+header .logo {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+header .logo:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+header h1 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  flex: 1;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+header span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  margin-left: auto;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-blue-subtle) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue-light);
+  transform: rotate(15deg) scale(1.1);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+.theme-toggle:hover::before {
+  opacity: 1;
+}
+
+/* ── MONTH NAVIGATION ── */
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.month-nav button {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.month-nav button:hover {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.month-nav button:active {
+  transform: translateY(0);
+}
+
+.month-nav h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  min-width: 220px;
+  text-align: center;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ── SUMMARY CARDS ── */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .resumen {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── SALARY SECTION ── */
+.sueldo-section {
+  padding: 0 var(--space-6) var(--space-6);
+}
+
+.sueldo-box {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+}
+
+.sueldo-box:hover {
+  box-shadow: var(--shadow-lg), var(--shadow-glow-green);
+  border-color: var(--accent-green);
+  transform: translateY(-2px);
+}
+
+.sueldo-box .info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.sueldo-box .info .lbl {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+.sueldo-box .info .val {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+  letter-spacing: -1px;
+}
+
+.sueldo-box .controls {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.sueldo-box input[type="number"] {
+  background: var(--bg-primary);
+  border: 2px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  width: 160px;
+  outline: none;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.sueldo-box input[type="number"]:focus {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px var(--accent-green-subtle);
+}
+
+/* ── SECTION TITLE ── */
+.section-title {
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border-subtle), transparent);
+  margin-left: var(--space-3);
+}
+
+/* ── CUENTAS LIST ── */
+.cuentas-list {
+  padding: 0 var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── NUEVA CUENTA SECTION ── */
+.nueva-cuenta-section {
+  padding: var(--space-6) var(--space-6) 0;
+}
+
+.nueva-cuenta-box {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.nueva-cuenta-box:hover {
+  border-color: var(--accent-blue);
+  background: linear-gradient(135deg, var(--accent-blue-subtle) 0%, var(--bg-secondary) 100%);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-blue);
+}
+
+.nueva-cuenta-box:active {
+  transform: translateY(-1px);
+}
+
+.nueva-cuenta-box .title {
+  font-size: 1rem;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--space-3);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.nueva-cuenta-box .title::before {
+  content: '+';
+  font-size: 1.25rem;
+}
+
+/* ── HISTORY SECTION ── */
+.historial-section {
+  padding: var(--space-6) var(--space-6) 0;
+}
+
+.historial-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  max-height: 280px;
+  overflow-y: auto;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.historial-box:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ── BACKUP SECTION ── */
+.backup-section {
+  padding: 0 var(--space-6) var(--space-10);
+}
+
+.backup-box {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.backup-box:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  header {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  header h1 {
+    font-size: 1.1rem;
+  }
+
+  .month-nav h2 {
+    font-size: 1.1rem;
+    min-width: 160px;
+  }
+
+  .resumen {
+    grid-template-columns: 1fr;
+    padding: var(--space-4);
+  }
+
+  .card .amount {
+    font-size: 1.5rem;
+  }
+
+  .sueldo-section,
+  .cuentas-list,
+  .nueva-cuenta-section,
+  .historial-section,
+  .backup-section {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .cuenta-item .actions {
+    opacity: 1;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-modal {
+    width: 100%;
+  }
+}
